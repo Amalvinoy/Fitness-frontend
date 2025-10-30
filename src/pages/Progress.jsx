@@ -1,0 +1,215 @@
+import React, { useEffect, useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+import {
+  getWeightLogsAPI,
+  getCalorieLogsAPI,
+  getFatLogsAPI,
+  getProteinLogsAPI,
+  addWeightLogAPI,
+  addCalorieLogAPI,
+  addFatLogAPI,
+  addProteinLogAPI,
+} from "../services/allAPIs";
+
+export default function Progress() {
+  const [weightLogs, setWeightLogs] = useState([]);
+  const [calorieLogs, setCalorieLogs] = useState([]);
+  const [fatLogs, setFatLogs] = useState([]);
+  const [proteinLogs, setProteinLogs] = useState([]);
+
+  const [newEntry, setNewEntry] = useState({
+    weight: "",
+    calories: "",
+    fat: "",
+    protein: "",
+  });
+
+  const [loading, setLoading] = useState(true);
+
+  // Fetch all logs independently
+  const fetchAllLogs = async () => {
+    try {
+      const [wRes, cRes, fRes, pRes] = await Promise.all([
+        getWeightLogsAPI(),
+        getCalorieLogsAPI(),
+        getFatLogsAPI(),
+        getProteinLogsAPI(),
+      ]);
+
+      setWeightLogs(wRes.data || []);
+      setCalorieLogs(cRes.data || []);
+      setFatLogs(fRes.data || []);
+      setProteinLogs(pRes.data || []);
+    } catch (err) {
+      console.error("Error fetching progress data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add new progress entry (independent fields)
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    const date = new Date().toISOString().split("T")[0];
+
+    try {
+      if (newEntry.weight)
+        await addWeightLogAPI({ date, weight: parseFloat(newEntry.weight) });
+
+      if (newEntry.calories)
+        await addCalorieLogAPI({ date, calories: parseInt(newEntry.calories) });
+
+      if (newEntry.fat)
+        await addFatLogAPI({ date, fat: parseFloat(newEntry.fat) });
+
+      if (newEntry.protein)
+        await addProteinLogAPI({ date, protein: parseFloat(newEntry.protein) });
+
+      setNewEntry({ weight: "", calories: "", fat: "", protein: "" });
+      fetchAllLogs();
+    } catch (err) {
+      console.error("Error adding log:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllLogs();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <p className="text-green-500 text-lg font-semibold animate-pulse">
+          Loading your progress...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-20 px-6">
+      {/* Page Title */}
+      <div className="max-w-5xl mx-auto text-center mb-10">
+        <h1 className="text-3xl font-bold text-green-700 mb-2">
+          Your Fitness Progress
+        </h1>
+        <p className="text-gray-600">
+          Track your weight, calories, fat %, and protein intake — update only what you want!
+        </p>
+      </div>
+
+      {/* Add Entry Form */}
+      <div className="max-w-3xl mx-auto bg-white shadow-md rounded-xl p-6 mb-10">
+        <h2 className="text-xl font-semibold text-green-700 mb-4">
+          Add New Progress Entry
+        </h2>
+        <form
+          onSubmit={handleAdd}
+          className="flex flex-col sm:flex-row flex-wrap gap-4 items-center"
+        >
+          <input
+            type="number"
+            step="0.1"
+            placeholder="Weight (kg)"
+            value={newEntry.weight}
+            onChange={(e) => setNewEntry({ ...newEntry, weight: e.target.value })}
+            className="border rounded-lg px-3 py-2 w-full sm:w-auto"
+          />
+          <input
+            type="number"
+            placeholder="Calories"
+            value={newEntry.calories}
+            onChange={(e) => setNewEntry({ ...newEntry, calories: e.target.value })}
+            className="border rounded-lg px-3 py-2 w-full sm:w-auto"
+          />
+          <input
+          
+            type="number"
+            step="0.1"
+            placeholder="Fat (%)"
+            value={newEntry.fat}
+            onChange={(e) => setNewEntry({ ...newEntry, fat: e.target.value })}
+            className="border rounded-lg px-3 py-2 w-full sm:w-auto"
+          />
+          <input
+            type="number"
+            step="0.1"
+            placeholder="Protein (g)"
+            value={newEntry.protein}
+            onChange={(e) => setNewEntry({ ...newEntry, protein: e.target.value })}
+            className="border rounded-lg px-3 py-2 w-full sm:w-auto"
+          />
+          <button
+            type="submit"
+            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+          >
+            Add
+          </button>
+        </form>
+      </div>
+
+      {/* Charts */}
+      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Weight */}
+        {weightLogs.length > 0 && (
+          <ChartCard title="Weight Progress (kg)" data={weightLogs} color="#16a34a" dataKey="weight" />
+        )}
+
+        {/* Calories */}
+        {calorieLogs.length > 0 && (
+          <ChartCard title="Calorie Intake (per day)" data={calorieLogs} color="#f59e0b" dataKey="calories" />
+        )}
+
+        {/* Fat */}
+        {fatLogs.length > 0 && (
+          <ChartCard title="Body Fat Percentage (%)" data={fatLogs} color="#ef4444" dataKey="fat" />
+        )}
+
+        {/* Protein */}
+        {proteinLogs.length > 0 && (
+          <ChartCard title="Protein Intake (g)" data={proteinLogs} color="#3b82f6" dataKey="protein" />
+        )}
+      </div>
+
+      {/* No Data */}
+      {weightLogs.length === 0 &&
+        calorieLogs.length === 0 &&
+        fatLogs.length === 0 &&
+        proteinLogs.length === 0 && (
+          <div className="text-center text-gray-500 mt-10">
+            <p>No progress data yet. Add your first entry above!</p>
+          </div>
+        )}
+    </div>
+  );
+}
+
+// ✅ Reusable Chart Component
+function ChartCard({ title, data, color, dataKey }) {
+  return (
+    <div className="bg-white shadow-md rounded-xl p-6">
+      <h2 className="text-xl font-semibold text-green-700 mb-4">{title}</h2>
+      <ResponsiveContainer width="100%" height={280}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={{ r: 4 }} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+
