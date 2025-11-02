@@ -5,7 +5,7 @@ import {
   deleteDietLogAPI,
 } from "../services/allAPIs";
 
-export default function DietTracker() {
+ function DietTracker() {
   const [dietLogs, setDietLogs] = useState([]);
   const [newLog, setNewLog] = useState({
     meal: "",
@@ -17,42 +17,32 @@ export default function DietTracker() {
 
   // Fetch all logs from JSON Server
   const fetchLogs = async () => {
-    try {
-      const res = await getDietLogsAPI();
-      if (res.status >= 200 && res.status < 300) {
-        setDietLogs(res.data || []);
-      }
-    } catch (err) {
-      console.error("Error fetching diet logs:", err);
-    }
-  };
+  try {
+    const res = await getDietLogsAPI();
+    setDietLogs(res.data );
+  } catch (err) {
+    console.error("Error fetching diet logs:", err);
+  }
+};
+
 
   // Add a new log
- const handleAdd = async (e) => {
+const handleAdd = async (e) => {
   e.preventDefault();
-  const date = new Date().toISOString().split("T")[0];
-  const id = Math.random().toString(36).substring(2, 8); // 👈 string ID
-
-  const data = {
-    id,
+  await addDietLogAPI({
     ...newLog,
-    date,
-    calories: parseFloat(newLog.calories || 0),
-    protein: parseFloat(newLog.protein || 0),
-    fat: parseFloat(newLog.fat || 0),
-    carbs: parseFloat(newLog.carbs || 0),
-  };
-
-  await addDietLogAPI(data);
+    date: new Date().toISOString().split("T")[0],
+  });
   setNewLog({ meal: "", calories: "", protein: "", fat: "", carbs: "" });
   fetchLogs();
 };
 
 
+
+
   // Delete a log
   const handleDelete = async (id) => {
     try {
-      // ✅ Force ID to string — JSON Server can handle both numeric and string IDs
       await deleteDietLogAPI(String(id));
       fetchLogs();
     } catch (err) {
@@ -67,10 +57,10 @@ export default function DietTracker() {
   // Calculate totals
   const totals = dietLogs.reduce(
     (acc, log) => {
-      acc.calories += Number(log.calories) || 0;
-      acc.protein += Number(log.protein) || 0;
-      acc.fat += Number(log.fat) || 0;
-      acc.carbs += Number(log.carbs) || 0;
+      acc.calories += Number(log.calories) ;
+      acc.protein += Number(log.protein) ;
+      acc.fat += Number(log.fat) ;
+      acc.carbs += Number(log.carbs);
       return acc;
     },
     { calories: 0, protein: 0, fat: 0, carbs: 0 }
@@ -186,3 +176,4 @@ export default function DietTracker() {
   );
 }
 
+export default DietTracker;

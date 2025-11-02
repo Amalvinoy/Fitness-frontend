@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 
-export default function Header() {
+ function Header() {
   return (
     <header className="bg-green-600 text-white shadow-md py-4">
       <div className="max-w-6xl mx-auto flex justify-between items-center px-4">
@@ -8,7 +8,7 @@ export default function Header() {
         {/* Logo / Brand */}
         <Link to="/" className="flex items-center space-x-2">
           <img
-            src="/logo.png"
+            src="./src/assets/fittrack.png"
             alt="FitTrack Logo"
             className="w-8 h-8 rounded-full"
           />
@@ -77,3 +77,4 @@ export default function Header() {
   );
 }
 
+export default Header;

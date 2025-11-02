@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { addProfileAPI } from "../services/allAPIs";
 import { useNavigate } from "react-router-dom";
 
-export default function ProfileForm() {
+ function ProfileForm() {
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -85,3 +85,5 @@ export default function ProfileForm() {
     </div>
   );
 }
+
+export default ProfileForm;

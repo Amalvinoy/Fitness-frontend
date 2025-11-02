@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getProfilesAPI } from "../services/allAPIs";
 import { useNavigate } from "react-router-dom";
 
-export default function ProfileView() {
+function ProfileView() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -92,5 +92,4 @@ export default function ProfileView() {
   );
 }
 
-
-
+export default ProfileView;

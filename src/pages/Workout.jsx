@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Workouts() {
+function Workouts() {
   const [selectedCategory, setSelectedCategory] = useState("Yoga");
   const [selectedLevel, setSelectedLevel] = useState("Beginner");
 
@@ -475,4 +475,4 @@ export default function Workouts() {
   );
 }
 
-
+export default Workouts;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getProfilesAPI, updateProfileAPI } from "../services/allAPIs";
 import { useNavigate } from "react-router-dom";
 
-export default function ProfileEdit() {
+ function ProfileEdit() {
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate();
 
@@ -102,4 +102,6 @@ export default function ProfileEdit() {
     </div>
   );
 }
+
+export default ProfileEdit;
 

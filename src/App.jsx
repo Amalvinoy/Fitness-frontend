@@ -10,6 +10,7 @@ import ProfileView from './pages/ProfileView'
 import DietTracker from './pages/DietTracker'
 import ProfileRouter from './pages/ProfileRouter'
 import ProfileEdit from './pages/ProfileEdit'
+import Footer from './components/Footer'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/profileedit" element={<ProfileEdit />} />
         <Route path="/diet" element={<DietTracker />} />
       </Routes>
+      <Footer />
     </>
   )
 }

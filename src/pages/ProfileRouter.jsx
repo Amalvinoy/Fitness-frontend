@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getProfilesAPI } from "../services/allAPIs";
 import { useNavigate } from "react-router-dom";
 
-export default function ProfileRouter() {
+ function ProfileRouter() {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
 
@@ -34,3 +34,5 @@ export default function ProfileRouter() {
     </div>
   ) : null;
 }
+
+export default ProfileRouter;
